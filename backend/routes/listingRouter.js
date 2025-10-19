@@ -6,11 +6,12 @@ import {
   newListing,
   updateListing,
 } from "../controllers/listing.js";
+import { authitacted, isAdmin } from "../middlewares/authMiddleware.js";
 const Listingrouter = express.Router();
 
 Listingrouter.route("/")
   .get(getAllListings) // GET /api/listings
-  .post(newListing); // POST /api/listings
+  .post(authitacted, newListing); // POST /api/listings
 
 Listingrouter.route("/:id")
   .get(listingFindById) // GET /api/listings/:id

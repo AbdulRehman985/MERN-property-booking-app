@@ -23,6 +23,7 @@ export const ListingsApiSlice = apiSlice.injectEndpoints({
       query: (data) => ({
         url: LISTING_URL,
         method: "POST",
+        credentials: "include",
         body: data,
       }),
       invalidatesTags: [{ type: "Listings", id: "LIST" }],
