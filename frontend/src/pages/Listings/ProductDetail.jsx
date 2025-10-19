@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 const ProductDetail = () => {
   const { id } = useParams();
   const { data: product, error, isLoading } = useGetListByIDQuery(id);
+  console.log(product)
   const [deleteListByID] = useDeleteListByIDMutation();
   const navigate = useNavigate();
   if (isLoading) return <LoaderComponent isLoading />;
@@ -29,7 +30,7 @@ const ProductDetail = () => {
       try {
         await deleteListByID(product?._id);
         toast.success("Listing deleted successfully!");
-        navigate("/listings");
+        navigate("/");
       } catch (error) {
         toast.error(error?.data?.message || "Failed to delete listing");
       }

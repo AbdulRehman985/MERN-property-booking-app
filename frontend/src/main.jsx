@@ -15,15 +15,22 @@ import ProductDetail from "./pages/Listings/ProductDetail.jsx";
 import ProductEdit from "./pages/Listings/ProductEdit.jsx";
 import NewProduct from "./pages/Listings/NewProduct.jsx";
 import LogIn from "./pages/auth/LogIn.jsx";
+import { ProtectedRoute } from "./components/PrivateRoute.jsx";
+import ErrorPage from "./components/ErrorPage.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<App />} path="/">
+      <Route path="*" element={<ErrorPage />} />
+      <Route index element={<AllProducts />} />   {/* Home shows all products */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<ProductDetail />} path="listings/:id" />
+      </Route>
+      <Route element={<ProtectedRoute adminOnly />}>
+        <Route element={<NewProduct />} path="listings/new" />
+        <Route element={<ProductEdit />} path="listings/:id/edit" />
+      </Route>
       <Route element={<LogIn />} path="login" />
-      <Route element={<AllProducts />} path="listings" />
-      <Route element={<NewProduct />} path="listings/new" />
-      <Route element={<ProductDetail />} path="listings/:id" />
-      <Route element={<ProductEdit />} path="listings/:id/edit" />
     </Route>
   )
 );

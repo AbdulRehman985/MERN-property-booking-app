@@ -46,7 +46,7 @@ const ProductEdit = () => {
       }).unwrap();
 
       toast.success(`${updatedProduct.title} has been updated.`);
-      navigate("/listings");
+      navigate(`/listings/${updatedProduct._id}`);
     } catch (err) {
       console.error(err.data.message);
       toast.error(err.data.message || "Product update failed. Try again.");

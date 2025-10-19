@@ -15,7 +15,11 @@ export const ListingsApiSlice = apiSlice.injectEndpoints({
     }),
 
     getListByID: builder.query({
-      query: (id) => `${LISTING_URL}/${id}`,
+      query: (id) => ({
+        url: `${LISTING_URL}/${id}`,
+        credentials: "include",
+      }),
+
       providesTags: (result, error, id) => [{ type: "Listings", id }],
     }),
 
@@ -33,6 +37,7 @@ export const ListingsApiSlice = apiSlice.injectEndpoints({
       query: ({ id, data }) => ({
         url: `${LISTING_URL}/${id}`,
         method: "PUT",
+        credentials: "include",
         body: data,
       }),
       invalidatesTags: (result, error, { id }) => [{ type: "Listings", id }],
@@ -41,6 +46,7 @@ export const ListingsApiSlice = apiSlice.injectEndpoints({
     deleteListByID: builder.mutation({
       query: (id) => ({
         url: `${LISTING_URL}/${id}`,
+        credentials: "include",
         method: "DELETE",
       }),
       invalidatesTags: (result, error, id) => [

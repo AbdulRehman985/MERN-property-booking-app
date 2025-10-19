@@ -36,6 +36,7 @@ export const register = async (req, res) => {
       _id: newUser._id,
       userName: newUser.userName,
       email: newUser.email,
+      isAdmin: newUser.isAdmin,
     });
   } catch (error) {
     console.error("Register Error:", error);
@@ -80,6 +81,7 @@ export const login = async (req, res) => {
       _id: existingUser._id,
       userName: existingUser.userName,
       email: existingUser.email,
+      isAdmin: existingUser.isAdmin,
     });
   } catch (error) {
     console.error("Login Error:", error);
