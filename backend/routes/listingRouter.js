@@ -4,9 +4,11 @@ import {
   getAllListings,
   listingFindById,
   newListing,
+  reviewListings,
   updateListing,
 } from "../controllers/listing.js";
 import { authitacted, isAdmin } from "../middlewares/authMiddleware.js";
+import checkId from "../middlewares/checkId.js";
 const Listingrouter = express.Router();
 
 Listingrouter.route("/")
@@ -17,4 +19,5 @@ Listingrouter.route("/:id")
   .get(authitacted, listingFindById) // GET /api/listings/:id
   .put(authitacted, isAdmin, updateListing) // PUT /api/listings/:id
   .delete(authitacted, isAdmin, deleteListing); // DELETE /api/listings/:id
+Listingrouter.route("/:id/review").post(authitacted, checkId, reviewListings);
 export default Listingrouter;

@@ -30,7 +30,7 @@ export const newListing = async (req, res) => {
   try {
     const { title, description, image, price, location, country } = req.body;
 
-    if (!title || !description  || !price || !location || !country) {
+    if (!title || !description || !price || !location || !country) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -41,6 +41,7 @@ export const newListing = async (req, res) => {
       price,
       location,
       country,
+      owner: req.user._id,
     });
 
     const savedListing = await newListing.save();
@@ -62,7 +63,7 @@ export const updateListing = async (req, res) => {
     if (!existingListing) {
       return res.status(404).json({ message: "Listing not found" });
     }
-    
+
     // ✅ Update listing
     const updatedListing = await Listing.findByIdAndUpdate(id, req.body, {
       new: true, // return the updated document
@@ -92,6 +93,39 @@ export const deleteListing = async (req, res) => {
     res.status(200).json({
       message: "Listing deleted successfully",
     });
+  } catch (error) {
+    console.error("❌ Error deleting listing:", error);
+    res.status(500).json({ message: error.message || "Server Error" });
+  }
+};
+
+export const reviewListings = async (req, res) => {
+  try {
+    const { comment, rating } = req.body;
+    if (!comment || !rating) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    const listing = await Listing.findById(req.params.id);
+    if (!listing) {
+      return res.status(404).json({ message: "Listing not found" });
+    }
+    const alreadyReviewed = listing.reviews.find(
+      (r) => r.user.toString() === req.user._id.toString()
+    );
+
+    if (alreadyReviewed) {
+      return res.status(400).json({ error: "Product already reviewed" });
+    }
+
+    const review = {
+      comment,
+      name: req.user.userName,
+      rating: Number(rating),
+      user: req.user,
+    };
+    listing.reviews.push(review);
+    listing.numReviews = listing.reviews.length;
+    await listing.save();
   } catch (error) {
     console.error("❌ Error deleting listing:", error);
     res.status(500).json({ message: error.message || "Server Error" });

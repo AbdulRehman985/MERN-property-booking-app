@@ -6,6 +6,7 @@ import { insertData } from "./init/insert.js";
 import Listingrouter from "./routes/listingRouter.js";
 import cookieParser from "cookie-parser";
 import userRouter from "./routes/UserRouter.js";
+import Listing from "./model/listing.js";
 
 dotenv.config();
 
@@ -21,9 +22,17 @@ app.use(
   })
 );
 
+const addOwnerProperty = async () => {
+  try {
+    await Listing.updateMany({}, { $set: { owner: "" } });
+    console.log("ADDED");
+  } catch (error) {
+    console.log(error);
+  }
+};
 // Connect Database
 connectDB();
-
+// addOwnerProperty();
 app.use("/api/listings", Listingrouter);
 app.use("/api/users", userRouter);
 // insertData();
