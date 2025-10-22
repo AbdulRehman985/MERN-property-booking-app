@@ -1,23 +1,20 @@
-import { useParams } from "react-router-dom";
 import { useAddReviewListingMutation } from "../../redux/api/listingsSlice";
 import { useState } from "react";
 
-const ReviewProducts = ({ product }) => {
-  const { id } = useParams();
+
+const ReviewProducts = ({ product, id }) => {
+
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState(0);
-
   const [reviewListing, { isLoading, error }] = useAddReviewListingMutation();
 
   const reviewHandler = async (e) => {
     e.preventDefault();
     try {
-      const res = await reviewListing({
-        id, // or product._id
-        comment,
-        rating,
-      }).unwrap();
-      console.log("✅ Review Added:", res);
+      await reviewListing({ id, comment, rating }).unwrap();
+      setComment("");
+      setRating(0);
+      console.log("✅ Review Added");
     } catch (err) {
       console.error("❌ Review error:", err);
     }

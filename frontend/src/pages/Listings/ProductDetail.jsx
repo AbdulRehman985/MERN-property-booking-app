@@ -7,7 +7,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import LoaderComponent from "../../components/LoaderComponent";
 import { toast } from "react-toastify";
 import ReviewProducts from "./ReviewProducts";
+import { useSelector } from "react-redux";
+
 const ProductDetail = () => {
+  const { userInfo } = useSelector((state) => state.auth);
   const { id } = useParams();
   const { data: product, error, isLoading } = useGetListByIDQuery(id);
   console.log(product)
@@ -69,8 +72,8 @@ const ProductDetail = () => {
           <p className="text-xl font-semibold text-green-400 mt-4">
             ${product?.price}
           </p>
+          {userInfo.isAdmin && (<div className="mt-25 flex justify-between">
 
-          <div className="mt-25 flex justify-between">
             {" "}
             <button
               className="bg-green-500 px-2 py-1 rounded font-semibold text-lg cursor-pointer"
@@ -84,12 +87,14 @@ const ProductDetail = () => {
             >
               Delete
             </button>
-          </div>
+          </div>)}
+
 
         </div>
 
       </div>
-      <ReviewProducts product={product} />
+      <ReviewProducts product={product} id={id} />
+
     </div>
 
   );

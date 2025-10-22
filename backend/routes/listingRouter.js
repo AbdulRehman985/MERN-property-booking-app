@@ -9,11 +9,12 @@ import {
 } from "../controllers/listing.js";
 import { authitacted, isAdmin } from "../middlewares/authMiddleware.js";
 import checkId from "../middlewares/checkId.js";
+import upload from "../middlewares/multer.js";
 const Listingrouter = express.Router();
 
 Listingrouter.route("/")
   .get(getAllListings) // GET /api/listings
-  .post(authitacted, isAdmin, newListing); // POST /api/listings
+  .post(upload.single("image"), authitacted, isAdmin, newListing); // POST /api/listings
 
 Listingrouter.route("/:id")
   .get(authitacted, listingFindById) // GET /api/listings/:id

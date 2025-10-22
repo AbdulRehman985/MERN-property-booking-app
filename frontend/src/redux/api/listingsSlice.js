@@ -3,6 +3,7 @@ import { apiSlice } from "./apiSlice";
 
 export const ListingsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    // ✅ 1. Get all listings
     getAllListing: builder.query({
       query: () => LISTING_URL,
       providesTags: (result) =>
@@ -14,6 +15,7 @@ export const ListingsApiSlice = apiSlice.injectEndpoints({
           : [{ type: "Listings", id: "LIST" }],
     }),
 
+    // ✅ 2. Get listing by ID
     getListByID: builder.query({
       query: (id) => ({
         url: `${LISTING_URL}/${id}`,
@@ -22,6 +24,7 @@ export const ListingsApiSlice = apiSlice.injectEndpoints({
       providesTags: (result, error, id) => [{ type: "Listings", id }],
     }),
 
+    // ✅ 3. Create new listing
     createListing: builder.mutation({
       query: (data) => ({
         url: LISTING_URL,
@@ -32,6 +35,7 @@ export const ListingsApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: [{ type: "Listings", id: "LIST" }],
     }),
 
+    // ✅ 4. Edit listing
     editListByID: builder.mutation({
       query: ({ id, data }) => ({
         url: `${LISTING_URL}/${id}`,
@@ -42,6 +46,7 @@ export const ListingsApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: (result, error, { id }) => [{ type: "Listings", id }],
     }),
 
+    // ✅ 5. Add review (auto cache update + optimistic UI)
     addReviewListing: builder.mutation({
       query: ({ id, comment, rating }) => ({
         url: `${LISTING_URL}/${id}/review`,
@@ -49,10 +54,11 @@ export const ListingsApiSlice = apiSlice.injectEndpoints({
         credentials: "include",
         body: { comment, rating },
       }),
-      // Auto refetch
+
+      // 🔥 Automatically refresh that product after review
       invalidatesTags: (result, error, { id }) => [{ type: "Listings", id }],
 
-      // Optional: Optimistic update
+      // ⚡ Optimistic UI (instant feedback)
       async onQueryStarted(
         { id, comment, rating },
         { dispatch, queryFulfilled }
@@ -61,9 +67,9 @@ export const ListingsApiSlice = apiSlice.injectEndpoints({
           ListingsApiSlice.util.updateQueryData("getListByID", id, (draft) => {
             draft.reviews.push({
               _id: Date.now().toString(),
+              name: "You",
               comment,
               rating,
-              name: "You",
             });
           })
         );
@@ -75,6 +81,7 @@ export const ListingsApiSlice = apiSlice.injectEndpoints({
       },
     }),
 
+    // ✅ 6. Delete listing
     deleteListByID: builder.mutation({
       query: (id) => ({
         url: `${LISTING_URL}/${id}`,

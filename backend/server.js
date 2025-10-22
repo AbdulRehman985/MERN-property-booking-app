@@ -7,6 +7,7 @@ import Listingrouter from "./routes/listingRouter.js";
 import cookieParser from "cookie-parser";
 import userRouter from "./routes/UserRouter.js";
 import Listing from "./model/listing.js";
+import path from "path";
 
 dotenv.config();
 
@@ -15,6 +16,9 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
+
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -22,14 +26,6 @@ app.use(
   })
 );
 
-const addOwnerProperty = async () => {
-  try {
-    await Listing.updateMany({}, { $set: { owner: "" } });
-    console.log("ADDED");
-  } catch (error) {
-    console.log(error);
-  }
-};
 // Connect Database
 connectDB();
 // addOwnerProperty();
