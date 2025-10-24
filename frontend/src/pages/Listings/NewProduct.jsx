@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 const NewProduct = () => {
   const [createListing, { isLoading, error }] = useCreateListingMutation();
 
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [image, setImage] = useState(null);
   const [description, setDescription] = useState("");
@@ -14,15 +15,22 @@ const NewProduct = () => {
   const [price, setPrice] = useState("");
   const [country, setCountry] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
+  if (isLoading) return <LoaderComponent isLoading={isLoading} />;
 
-  const navigate = useNavigate();
+  if (error)
+    return (
+      <div className="flex justify-center items-center h-screen text-red-500">
+        Error loading listings.
+      </div>
+    );
+
 
   const newHandler = async (e) => {
     e.preventDefault();
     setIsUpdating(true);
 
     try {
-      // 🧠 Use FormData for image upload
+
       const listingData = new FormData();
       listingData.append("title", title);
       listingData.append("description", description);

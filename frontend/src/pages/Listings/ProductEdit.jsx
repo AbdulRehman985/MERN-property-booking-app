@@ -30,6 +30,7 @@ const ProductEdit = () => {
     }
   }, [product]);
   if (isLoading) return <LoaderComponent />;
+
   if (error)
     return (
       <div className="flex justify-center items-center h-screen text-red-500">
@@ -40,9 +41,18 @@ const ProductEdit = () => {
     e.preventDefault();
     setIsUpdating(true);
     try {
+
+      const listingData = new FormData();
+      listingData.append("title", title);
+      listingData.append("description", description);
+      listingData.append("price", price);
+      listingData.append("location", location);
+      listingData.append("country", country);
+      listingData.append("image", image);
+
       const updatedProduct = await productEdit({
         id: product._id,
-        data: { image, price, title, description, country, location },
+        data: listingData,
       }).unwrap();
 
       toast.success(`${updatedProduct.title} has been updated.`);
@@ -57,6 +67,12 @@ const ProductEdit = () => {
   return (
     <div>
       <form onSubmit={editHandler}>
+        <input
+          type="file"
+          name="image"
+          onChange={(e) => setImage(e.target.files[0])}
+        />
+
         <input
           type="text"
           name="title"

@@ -30,11 +30,20 @@ export const newListing = async (req, res) => {
   try {
     const { title, description, price, location, country } = req.body;
 
+    // Validate fields (image is uploaded separately)
     if (!title || !description || !price || !location || !country) {
       return res.status(400).json({ message: "All fields are required" });
     }
-    console.log("req.body:", req.body);
-    console.log("req.file:", req.file);
+
+    if (!req.cloudinaryResult) {
+      return res
+        .status(400)
+        .json({ message: "Image upload failed or missing" });
+    }
+
+    console.log("✅ req.body:", req.body);
+    console.log("✅ req.cloudinaryResult:", req.cloudinaryResult);
+
     const newListing = new Listing({
       title,
       description,
@@ -42,17 +51,15 @@ export const newListing = async (req, res) => {
       location,
       country,
       image: {
-        filename: req.file.filename,
-        url: `${req.protocol}://${req.get("host")}/uploads/${
-          req.file.filename
-        }`,
+        url: req.cloudinaryResult.url,
+        public_id: req.cloudinaryResult.public_id,
       },
       owner: req.user._id,
     });
 
     const savedListing = await newListing.save();
-
     console.log("✅ New listing created:", savedListing);
+
     res.status(201).json(savedListing);
   } catch (error) {
     console.error("❌ Error creating new listing:", error);
@@ -64,19 +71,48 @@ export const updateListing = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // ✅ Check if listing exists
+    // Check if listing exists
     const existingListing = await Listing.findById(id);
     if (!existingListing) {
       return res.status(404).json({ message: "Listing not found" });
     }
 
-    // ✅ Update listing
-    const updatedListing = await Listing.findByIdAndUpdate(id, req.body, {
-      new: true, // return the updated document
-      runValidators: true, // ensure schema validation rules are enforced
+    const { title, description, price, location, country } = req.body;
+
+    // Validate required fields
+    if (!title || !description || !price || !location || !country) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // Prepare updated data
+    const updatedData = {
+      title,
+      description,
+      price,
+      location,
+      country,
+      owner: req.user._id,
+    };
+    console.log(updatedData);
+
+    // If a new image is uploaded
+    if (req.cloudinaryResult) {
+      // Optional: delete old image from Cloudinary
+      // await cloudinary.uploader.destroy(existingListing.image.public_id);
+
+      updatedData.image = {
+        url: req.cloudinaryResult.url,
+        public_id: req.cloudinaryResult.public_id,
+      };
+    }
+
+    // Update listing
+    const updatedListing = await Listing.findByIdAndUpdate(id, updatedData, {
+      new: true,
+      runValidators: true,
     });
 
-    res.status(200).json(updatedListing); // ✅ use 200 OK for update
+    res.status(200).json(updatedListing);
   } catch (error) {
     console.error("❌ Error updating listing:", error);
     res.status(500).json({ message: error.message || "Server Error" });
