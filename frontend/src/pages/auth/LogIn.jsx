@@ -19,7 +19,7 @@ const LogIn = () => {
 
             dispatch(setCredentials({ ...res }));
             toast.success("user login successfully");
-            navigate("/listings");
+            navigate("/");
         } catch (error) {
             console.log(error.data.message || error);
             toast.error(error.data.message || "Server error");
